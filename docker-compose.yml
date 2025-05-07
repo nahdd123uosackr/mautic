@@ -1,10 +1,6 @@
 services:
   mautic:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      platforms:
-        - linux/arm64
+    image: ghcr.io/nahdd123uosackr/mautic:main
     ports:
       - "8080:80"
     volumes:
