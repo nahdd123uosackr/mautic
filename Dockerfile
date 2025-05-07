@@ -121,7 +121,7 @@ ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # 빌더 스테이지에서 필요한 파일 복사
-COPY --from=builder /usr/local/bin/composer /usr/local/bin/composer
+COPY --from=builder /usr/bin/composer /usr/bin/composer
 COPY --from=builder /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=builder /usr/local/etc/php/php.ini /usr/local/etc/php/php.ini
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
