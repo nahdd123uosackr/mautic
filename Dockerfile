@@ -173,8 +173,6 @@ RUN mkdir -p /var/www/mautic
 RUN chown -R www-data:www-data /var/www/mautic
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-VOLUME ["/var/www/mautic"]
-
 EXPOSE 80
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
