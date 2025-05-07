@@ -77,13 +77,13 @@ jobs:
 
       # Build and push base Docker image
       # https://github.com/docker/build-push-action
-      - name: Build and push base image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile.base
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:base-8.1
+      # - name: Build and push base image (주석처리: 베이스 이미지 재빌드 방지)
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: Dockerfile.base
+      #     push: ${{ github.event_name != 'pull_request' }}
+      #     tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:base-8.1
 
       # Build and push service Docker image (don't push on PR)
       # https://github.com/docker/build-push-action
