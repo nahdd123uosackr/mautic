@@ -1,8 +1,11 @@
-FROM php:8.1-apache
+FROM --platform=$BUILDPLATFORM php:8.1-apache AS builder
 
 # 타임존 설정
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 아키텍처 정보 표시
+RUN echo "Building for architecture: $(uname -m)"
 
 # 필요한 시스템 패키지 설치
 RUN apt-get update && apt-get install -y \
@@ -103,6 +106,71 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # PHP 확장 설정 조정
 RUN echo "date.timezone = UTC" >> /usr/local/etc/php/conf.d/timezone.ini
+
+VOLUME ["/var/www/mautic"]
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+# 멀티 아키텍처 빌드를 위한 최종 이미지
+FROM --platform=$TARGETPLATFORM php:8.1-apache AS final
+
+# 타임존 설정
+ENV TZ=Asia/Seoul
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 빌더 스테이지에서 필요한 파일 복사
+COPY --from=builder /usr/local/bin/composer /usr/local/bin/composer
+COPY --from=builder /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY --from=builder /usr/local/etc/php/php.ini /usr/local/etc/php/php.ini
+COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+COPY --from=builder /etc/apache2/ /etc/apache2/
+
+# 필요한 시스템 패키지 설치
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    zip \
+    unzip \
+    git \
+    libzip-dev \
+    libicu-dev \
+    libonig-dev \
+    libxml2-dev \
+    curl \
+    wget \
+    lsof \
+    iputils-ping \
+    nano \
+    cron \
+    default-mysql-client \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+# NodeJS와 NPM 설치
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get update && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# PHP 확장 설치
+RUN docker-php-ext-install pdo pdo_mysql mysqli opcache intl mbstring zip exif pcntl bcmath soap xml
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd
+
+# Apache 설정
+RUN a2enmod rewrite
+
+# 작업 디렉토리 설정
+WORKDIR /var/www/html
+
+# 기본 디렉토리 구조 생성
+RUN mkdir -p /var/www/mautic
+
+# 권한 설정
+RUN chown -R www-data:www-data /var/www/mautic
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 VOLUME ["/var/www/mautic"]
 
