@@ -26,8 +26,9 @@ services:
       MAUTIC_MAILER_FROM_NAME: 'Mautic'
       MAUTIC_MAILER_FROM_EMAIL: 'mautic@localhost'
       MAUTIC_MAILER_TRANSPORT: 'smtp'
-      MAUTIC_MAILER_HOST: 'mailhog'
-      MAUTIC_MAILER_PORT: '1025'
+      # mailhog를 사용하지 않음
+      # MAUTIC_MAILER_HOST: 'mailhog'
+      # MAUTIC_MAILER_PORT: '1025'
       
       # 시간대 설정
       TZ: 'Asia/Seoul'
@@ -37,7 +38,6 @@ services:
       PHP_MAX_EXECUTION_TIME: 300
     depends_on:
       - database
-      - mailhog
     restart: unless-stopped
 
   database:

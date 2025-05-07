@@ -61,8 +61,9 @@ RUN mkdir -p /var/www/mautic
 
 # Apache 설정 변경
 RUN echo '<VirtualHost *:80>\n\
-    DocumentRoot /var/www/mautic/docroot\n\
-    <Directory /var/www/mautic/docroot>\n\
+    ServerName localhost\n\
+    DocumentRoot /var/www/mautic/public\n\
+    <Directory /var/www/mautic/public>\n\
         AllowOverride All\n\
         Require all granted\n\
     </Directory>\n\
