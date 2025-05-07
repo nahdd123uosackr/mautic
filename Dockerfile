@@ -1,6 +1,6 @@
 
 # Mautic 6 설치를 위한 최적화된 Dockerfile (서비스용)
-FROM php:8.1-apache-base
+FROM ghcr.io/nahdd123uosackr/mautic:base-8.1
 # 실제 사용 시에는 아래와 같이 커스텀 베이스 이미지 태그로 교체하세요.
 # 예시: FROM myorg/mautic-base:8.1
 
