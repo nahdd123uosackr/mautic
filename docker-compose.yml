@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   mautic:
     build:
@@ -10,13 +8,33 @@ services:
     volumes:
       - ./mautic_data:/var/www/mautic
     environment:
+      # 데이터베이스 설정
       MAUTIC_DB_HOST: database
       MAUTIC_DB_USER: mautic
       MAUTIC_DB_PASSWORD: mautic
       MAUTIC_DB_NAME: mautic
+      MAUTIC_DB_PORT: 3306
+      MAUTIC_DB_TABLE_PREFIX: 
+      
+      # Cron 작업 설정
       MAUTIC_RUN_CRON_JOBS: 'true'
+      
+      # 이메일 설정 (필요시 업데이트)
+      MAUTIC_MAILER_FROM_NAME: 'Mautic'
+      MAUTIC_MAILER_FROM_EMAIL: 'mautic@localhost'
+      MAUTIC_MAILER_TRANSPORT: 'smtp'
+      MAUTIC_MAILER_HOST: 'mailhog'
+      MAUTIC_MAILER_PORT: '1025'
+      
+      # 시간대 설정
+      TZ: 'Asia/Seoul'
+      
+      # PHP 설정
+      PHP_MEMORY_LIMIT: 512M
+      PHP_MAX_EXECUTION_TIME: 300
     depends_on:
       - database
+      - mailhog
     restart: unless-stopped
 
   database:
@@ -31,4 +49,12 @@ services:
       MYSQL_USER: mautic
       MYSQL_PASSWORD: mautic
     command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+
+  # 이메일 테스트를 위한 MailHog 추가
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025" # 웹 인터페이스
+      - "1025:1025" # SMTP 서버
     restart: unless-stopped
