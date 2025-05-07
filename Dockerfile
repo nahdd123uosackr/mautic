@@ -1,40 +1,10 @@
 
-# Mautic 6 설치를 위한 최적화된 Dockerfile
-FROM php:8.1-apache
+# Mautic 6 설치를 위한 최적화된 Dockerfile (서비스용)
+FROM php:8.1-apache-base
+# 실제 사용 시에는 아래와 같이 커스텀 베이스 이미지 태그로 교체하세요.
+# 예시: FROM myorg/mautic-base:8.1
 
-# 타임존 및 시스템 패키지
-ENV TZ=Asia/Seoul
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    zip \
-    unzip \
-    git \
-    libzip-dev \
-    libicu-dev \
-    libonig-dev \
-    libxml2-dev \
-    curl \
-    wget \
-    lsof \
-    iputils-ping \
-    nano \
-    cron \
-    default-mysql-client \
-    sudo \
-    && rm -rf /var/lib/apt/lists/*
-
-# NodeJS와 NPM
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get update && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
-
-# PHP 확장
-RUN docker-php-ext-install pdo pdo_mysql mysqli opcache intl mbstring zip exif pcntl bcmath soap xml
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd
+# 이하 기존 Dockerfile의 나머지 부분만 유지
 
 # Composer 설치
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
