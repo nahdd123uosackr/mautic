@@ -26,10 +26,15 @@ RUN apt-get update && apt-get install -y curl && \
     sudo \
     nodejs && \
     rm -rf /var/lib/apt/lists/*
-
-RUN docker-php-ext-install pdo pdo_mysql mysqli opcache intl mbstring zip exif pcntl bcmath soap xml \
-    && apt-get update && apt-get install -y libc-client-dev libkrb5-dev \
+    
+# imap 확장 설치 (필수 라이브러리 설치 후 별도 RUN)
+RUN apt-get update \
+    && apt-get install -y libc-client-dev libkrb5-dev libssl-dev \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-install imap \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-install pdo pdo_mysql mysqli opcache intl mbstring zip exif pcntl bcmath soap xml \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd
+
