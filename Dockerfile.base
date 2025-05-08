@@ -16,7 +16,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 
 # 필요한 PHP 확장만 설치 (이미 포함된 pdo/xml 등 제외)
 RUN docker-php-ext-install -j$(nproc) \
-    pdo_mysql mysqli intl mbstring zip exif pcntl bcmath soap
+    pdo_mysql mysqli intl mbstring zip exif pcntl bcmath soap sockets
 
 # GD 확장
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
