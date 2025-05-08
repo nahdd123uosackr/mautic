@@ -15,7 +15,6 @@ if [ ! -f /var/www/mautic/composer.json ]; then
             cp -a "/var/www/mautic/app/$d" "$TMPDIR/app/"
         fi
     done
-    rm -rf /var/www/mautic/*
     cp -a "$TMPDIR/"* /var/www/mautic/
     chown -R www-data:www-data /var/www/mautic
     chmod -R 755 /var/www/mautic
