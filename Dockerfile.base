@@ -1,40 +1,30 @@
-# 베이스 이미지: PHP 및 시스템 패키지, 확장 설치만 포함
 FROM php:8.1-apache
 
 ENV TZ=Asia/Seoul
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get update && apt-get install -y curl && \
-    curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    zip \
-    unzip \
-    git \
-    libzip-dev \
-    libicu-dev \
-    libonig-dev \
-    libxml2-dev \
-    curl \
-    wget \
-    lsof \
-    iputils-ping \
-    nano \
-    cron \
+
+# 타임존 및 시스템 패키지 설치
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+ && apt-get update && apt-get install -y \
+    curl wget unzip nano cron sudo lsof iputils-ping git \
     default-mysql-client \
-    sudo \
-    nodejs && \
-    rm -rf /var/lib/apt/lists/*
-    
-# imap 확장 설치 (필수 라이브러리 설치 후 별도 RUN)
-RUN apt-get update \
-    && apt-get install -y libc-client-dev libkrb5-dev libssl-dev \
-    && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-install imap \
-    && rm -rf /var/lib/apt/lists/*
+    libpng-dev libjpeg-dev libfreetype6-dev \
+    libzip-dev libicu-dev libonig-dev libxml2-dev \
+    libc-client-dev libkrb5-dev libssl-dev \
+ && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+ && apt-get install -y nodejs \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install pdo pdo_mysql mysqli opcache intl mbstring zip exif pcntl bcmath soap xml \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd
+# 필요한 PHP 확장만 설치 (이미 포함된 pdo/xml 등 제외)
+RUN docker-php-ext-install -j$(nproc) \
+    pdo_mysql mysqli intl mbstring zip exif pcntl bcmath soap
 
+# GD 확장
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j$(nproc) gd
+
+# imap 확장
+RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
+ && docker-php-ext-install -j$(nproc) imap
+
+# Apache rewrite 모듈 활성화
+RUN a2enmod rewrite
