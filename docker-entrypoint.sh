@@ -5,33 +5,21 @@ set -e
 
 # config, logs, media, plugins 디렉토리만 남기고 나머지는 삭제 후 설치
 if [ ! -f /var/www/mautic/composer.json ]; then
-    echo "Checking /var/www/mautic for existing files..."
-    for d in $(ls -A /var/www/mautic); do
-        case "$d" in
-            app)
-                # app 하위의 config, logs, media, plugins만 남기고 삭제
-                for subd in $(ls -A /var/www/mautic/app); do
-                    case "$subd" in
-                        config|logs|media|plugins)
-                            ;;
-                        *)
-                            rm -rf "/var/www/mautic/app/$subd"
-                            ;;
-                    esac
-                done
-                ;;
-            config|logs|media|plugins)
-                # 유지
-                ;;
-            *)
-                rm -rf "/var/www/mautic/$d"
-                ;;
-        esac
-    done
     echo "Mautic not found. Installing..."
-    composer create-project mautic/recommended-project:^6 /var/www/mautic --no-interaction
+    TMPDIR=$(mktemp -d)
+    composer create-project mautic/recommended-project:^6 "$TMPDIR" --no-interaction
+    # 기존 config/logs/media/plugins 유지
+    for d in config logs media plugins; do
+        if [ -d /var/www/mautic/app/$d ]; then
+            rm -rf "$TMPDIR/app/$d"
+            cp -a "/var/www/mautic/app/$d" "$TMPDIR/app/"
+        fi
+    done
+    rm -rf /var/www/mautic/*
+    cp -a "$TMPDIR/"* /var/www/mautic/
     chown -R www-data:www-data /var/www/mautic
     chmod -R 755 /var/www/mautic
+    rm -rf "$TMPDIR"
     echo "Mautic installed successfully!"
 fi
 
