@@ -79,7 +79,7 @@ jobs:
       - name: Build and push base image
         uses: docker/build-push-action@v5
         with:
-         context: .
+          context: .
           file: Dockerfile.base
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:base-8.1
