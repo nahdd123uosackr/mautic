@@ -10,7 +10,8 @@ FROM ghcr.io/nahdd123uosackr/mautic:base-8.1
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Apache 설정
-RUN a2enmod rewrite
+RUN a2enmod rewrite \
+    && sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/mautic|g' /etc/apache2/sites-available/000-default.conf
 
 # 작업 디렉토리
 WORKDIR /var/www/html
