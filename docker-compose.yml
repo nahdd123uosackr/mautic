@@ -7,9 +7,7 @@ services:
       # 첫 설치 후 볼륨을 활성화하려면 아래 줄의 주석을 제거하세요
       # - ./mautic_data:/var/www/mautic
       # 설정 파일과 데이터만 유지하려면 다음 줄을 활성화하세요
-      - ./mautic_data/app/config:/var/www/mautic/app/config
-      - ./mautic_data/app/logs:/var/www/mautic/app/logs
-      - ./mautic_data/app/media:/var/www/mautic/app/media
+      - ./mautic_data:/var/www/mautic
     environment:
       # 데이터베이스 설정
       MAUTIC_DB_HOST: database
