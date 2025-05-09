@@ -5,8 +5,8 @@ set -e
 if [ ! -f /var/www/mautic/.env ]; then
     if [ -f /var/www/mautic/.env.example ]; then
         cp /var/www/mautic/.env.example /var/www/mautic/.env
-    elif [ -f /var/www/mautic/.env.dist ]; then
-        cp /var/www/mautic/.env.dist /var/www/mautic/.env
+    elif [ -f /var/www/.env ]; then
+        cp /var/www/.env /var/www/mautic/.env
     fi
 fi
 
