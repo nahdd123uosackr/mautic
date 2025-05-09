@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# /var/www/mautic/.env 파일이 없으면 .env.example 또는 .env.dist에서 복사
+if [ ! -f /var/www/mautic/.env ]; then
+    if [ -f /var/www/mautic/.env.example ]; then
+        cp /var/www/mautic/.env.example /var/www/mautic/.env
+    elif [ -f /var/www/mautic/.env.dist ]; then
+        cp /var/www/mautic/.env.dist /var/www/mautic/.env
+    fi
+fi
+
 # Mautic 설치가 안 되어 있으면 설치
 
 # config, logs, media, plugins 디렉토리만 남기고 나머지는 삭제 후 설치
