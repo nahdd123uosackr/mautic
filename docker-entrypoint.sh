@@ -6,8 +6,8 @@ if [ -n "$MAUTIC_DB_HOST" ] && [ -n "$MAUTIC_DB_USER" ] && [ -n "$MAUTIC_DB_PASS
   until mysql -h"$MAUTIC_DB_HOST" -u"$MAUTIC_DB_USER" -p"$MAUTIC_DB_PASSWORD" -e "USE $MAUTIC_DB_NAME;" 2>/dev/null; do
     echo "Waiting for MySQL to be ready..."
     sleep 2
+    mysql -h"$MAUTIC_DB_HOST" -u"$MAUTIC_DB_USER" -p"$MAUTIC_DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $MAUTIC_DB_NAME DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
   done
-  mysql -h"$MAUTIC_DB_HOST" -u"$MAUTIC_DB_USER" -p"$MAUTIC_DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $MAUTIC_DB_NAME DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 fi
 
 # /var/www/mautic/.env 파일이 없으면 .env.example 또는 .env.dist에서 복사
